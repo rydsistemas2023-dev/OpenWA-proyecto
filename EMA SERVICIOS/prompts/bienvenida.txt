@@ -1,18 +1,8 @@
-👋 Bienvenido al sistema de toma de lecturas de EMA Servicios.
+Estimado/a, le escribe EMA Servicios S.A., empresa autorizada para la verificación y toma de estado de medidores domiciliarios.
 
-Por favor indicá la distribuidora:
+Para avanzar con el proceso de validación, por favor indique a qué servicio corresponde la lectura:
 
-1️⃣ Edenor
-2️⃣ Naturgy
+1 - Edenor
+2 - Naturgy
 
-También podés escribir:
-- Edenor
-- Naturgy
-
-A continuación te solicitaremos:
-• Número de póliza
-• Número de medidor
-• Estado del medidor
-• Foto del medidor
-
-Gracias.
+También puede responder escribiendo "Edenor" o "Naturgy".
