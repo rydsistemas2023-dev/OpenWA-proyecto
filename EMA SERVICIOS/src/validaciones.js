@@ -1,24 +1,34 @@
+function normalizarTexto(texto) {
+  return String(texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
 function esNumero(valor) {
-  return /^\d+$/.test(valor);
+  return /^[0-9]+$/.test(String(valor || "").trim());
 }
 
 function detectarDistribuidora(texto) {
-
-  texto = texto.toLowerCase();
+  const t = normalizarTexto(texto);
 
   if (
-    texto.includes("1") ||
-    texto.includes("edenor") ||
-    texto.includes("edeno") ||
-    texto.includes("eden")
+    t === "1" ||
+    t.includes("edenor") ||
+    t.includes("eden") ||
+    t.includes("ednor") ||
+    t.includes("edenro")
   ) {
     return "EDENOR";
   }
 
   if (
-    texto.includes("2") ||
-    texto.includes("naturgy") ||
-    texto.includes("natur")
+    t === "2" ||
+    t.includes("naturgy") ||
+    t.includes("natur") ||
+    t.includes("natugy") ||
+    t.includes("naturgi")
   ) {
     return "NATURGY";
   }
@@ -26,7 +36,21 @@ function detectarDistribuidora(texto) {
   return null;
 }
 
+function extraerLecturaYMedidor(texto) {
+  const lineas = String(texto || "")
+    .split("\n")
+    .map(l => l.trim())
+    .filter(Boolean);
+
+  return {
+    numeroMedidor: lineas[0] || "",
+    lectura: lineas.slice(1).join(" ") || ""
+  };
+}
+
 module.exports = {
+  normalizarTexto,
   esNumero,
-  detectarDistribuidora
+  detectarDistribuidora,
+  extraerLecturaYMedidor
 };
