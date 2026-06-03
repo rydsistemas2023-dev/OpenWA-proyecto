@@ -1,0 +1,6 @@
+A continuación, por favor envíe una fotografía del medidor en la cual se visualice de manera nítida:
+
+- Número de medidor
+- Lectura actual del visor
+
+Si no puede enviar la foto, indique por mensaje el número de medidor y la lectura actual.
