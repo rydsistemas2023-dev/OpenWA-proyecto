@@ -1,1 +1,18 @@
+👋 Bienvenido al sistema de toma de lecturas de EMA Servicios.
 
+Por favor indicá la distribuidora:
+
+1️⃣ Edenor
+2️⃣ Naturgy
+
+También podés escribir:
+- Edenor
+- Naturgy
+
+A continuación te solicitaremos:
+• Número de póliza
+• Número de medidor
+• Estado del medidor
+• Foto del medidor
+
+Gracias.
