@@ -4,6 +4,13 @@ const s3 = new S3Client({
   region: process.env.AWS_REGION
 });
 
+function limpiarNombreArchivo(valor) {
+  return String(valor || "")
+    .replace(/[\\/:*?"<>|]/g, "")
+    .replace(/\s+/g, "_")
+    .trim();
+}
+
 async function subirFotoAS3({ buffer, nombreArchivo, contentType }) {
   const bucket = process.env.S3_BUCKET_NAME;
 
@@ -11,7 +18,8 @@ async function subirFotoAS3({ buffer, nombreArchivo, contentType }) {
     throw new Error("Falta S3_BUCKET_NAME");
   }
 
-  const key = `whatsapp/${Date.now()}-${nombreArchivo}`;
+  const nombreLimpio = limpiarNombreArchivo(nombreArchivo || `foto-${Date.now()}.jpg`);
+  const key = `whatsapp/${nombreLimpio}`;
 
   await s3.send(
     new PutObjectCommand({
