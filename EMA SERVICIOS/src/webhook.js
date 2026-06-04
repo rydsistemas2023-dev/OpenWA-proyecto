@@ -14,6 +14,40 @@ function obtenerSesion(telefono) {
   return sesiones[telefono];
 }
 
+function obtenerExtension(contentType) {
+  if (contentType === "image/png") return "png";
+  if (contentType === "image/webp") return "webp";
+  if (contentType === "image/jpeg") return "jpg";
+  return "jpg";
+}
+
+function obtenerFechaArchivo() {
+  return new Date()
+    .toLocaleDateString("es-AR")
+    .replace(/\//g, "-");
+}
+
+function limpiarNombreArchivo(valor) {
+  return String(valor || "")
+    .replace(/[\\/:*?"<>|]/g, "")
+    .replace(/\s+/g, "_")
+    .trim();
+}
+
+function generarNombreFoto(usuario, contentType) {
+  const extension = obtenerExtension(contentType);
+  const fecha = obtenerFechaArchivo();
+
+  const numeroMedidor =
+    usuario.numeroMedidor ||
+    usuario.poliza ||
+    "SIN_MEDIDOR";
+
+  const nombreBase = limpiarNombreArchivo(numeroMedidor);
+
+  return `${nombreBase}(${fecha}).${extension}`;
+}
+
 async function recibirMensaje(payload) {
   const value = payload?.entry?.[0]?.changes?.[0]?.value;
   const message = value?.messages?.[0];
@@ -31,19 +65,24 @@ async function recibirMensaje(payload) {
   const mediaId = message.image?.id || null;
   const tieneFoto = Boolean(mediaId);
 
+  const usuario = obtenerSesion(numeroWhatsapp);
+
   let linkFoto = "";
 
   if (tieneFoto) {
     const media = await descargarMediaDesdeMeta(mediaId);
 
+    const nombreArchivo = generarNombreFoto(
+      usuario,
+      media.contentType
+    );
+
     linkFoto = await subirFotoAS3({
       buffer: media.buffer,
-      nombreArchivo: `${numeroWhatsapp}-${Date.now()}.jpg`,
+      nombreArchivo,
       contentType: media.contentType
     });
   }
-
-  const usuario = obtenerSesion(numeroWhatsapp);
 
   const mensaje = {
     texto: textoRecibido,
