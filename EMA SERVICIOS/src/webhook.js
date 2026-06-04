@@ -1,3 +1,4 @@
+const ESTADOS = require("./estados");
 const { procesarMensaje } = require("./flujo");
 const { descargarMediaDesdeMeta } = require("./metaMedia");
 const { subirFotoAS3 } = require("./s3");
@@ -17,7 +18,6 @@ function obtenerExtension(contentType) {
   if (contentType === "image/png") return "png";
   if (contentType === "image/webp") return "webp";
   if (contentType === "image/jpeg") return "jpg";
-
   return "jpg";
 }
 
@@ -47,10 +47,7 @@ async function recibirMensaje(payload) {
   const message = value?.messages?.[0];
 
   if (!message) {
-    return {
-      ok: true,
-      ignorado: true
-    };
+    return { ok: true, ignorado: true };
   }
 
   const numeroWhatsapp = message.from;
@@ -62,7 +59,7 @@ async function recibirMensaje(payload) {
 
   let linkFoto = "";
 
-  if (tieneFoto) {
+  if (tieneFoto && usuario.estado === ESTADOS.FOTO) {
     const media = await descargarMediaDesdeMeta(mediaId);
 
     linkFoto = await subirFotoAS3({
