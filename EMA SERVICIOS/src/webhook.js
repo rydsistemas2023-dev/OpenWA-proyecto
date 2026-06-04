@@ -1,14 +1,13 @@
 const { procesarMensaje } = require("./flujo");
 const { descargarMediaDesdeMeta } = require("./metaMedia");
 const { subirFotoAS3 } = require("./s3");
+const { enviarTexto } = require("./metaSend");
 
 const sesiones = {};
 
 function obtenerSesion(telefono) {
   if (!sesiones[telefono]) {
-    sesiones[telefono] = {
-      telefono
-    };
+    sesiones[telefono] = { telefono };
   }
 
   return sesiones[telefono];
@@ -18,13 +17,8 @@ function obtenerExtension(contentType) {
   if (contentType === "image/png") return "png";
   if (contentType === "image/webp") return "webp";
   if (contentType === "image/jpeg") return "jpg";
-  return "jpg";
-}
 
-function obtenerFechaArchivo() {
-  return new Date()
-    .toLocaleDateString("es-AR")
-    .replace(/\//g, "-");
+  return "jpg";
 }
 
 function limpiarNombreArchivo(valor) {
@@ -36,14 +30,14 @@ function limpiarNombreArchivo(valor) {
 
 function generarNombreFoto(usuario, contentType) {
   const extension = obtenerExtension(contentType);
-  const fecha = obtenerFechaArchivo();
 
-  const numeroMedidor =
-    usuario.numeroMedidor ||
-    usuario.poliza ||
-    "SIN_MEDIDOR";
+  const fecha = new Date()
+    .toLocaleDateString("es-AR")
+    .replace(/\//g, "-");
 
-  const nombreBase = limpiarNombreArchivo(numeroMedidor);
+  const nombreBase = limpiarNombreArchivo(
+    usuario.numeroMedidor || usuario.poliza || "SIN_MEDIDOR"
+  );
 
   return `${nombreBase}(${fecha}).${extension}`;
 }
@@ -55,8 +49,7 @@ async function recibirMensaje(payload) {
   if (!message) {
     return {
       ok: true,
-      ignorado: true,
-      motivo: "Payload sin mensaje"
+      ignorado: true
     };
   }
 
@@ -72,27 +65,24 @@ async function recibirMensaje(payload) {
   if (tieneFoto) {
     const media = await descargarMediaDesdeMeta(mediaId);
 
-    const nombreArchivo = generarNombreFoto(
-      usuario,
-      media.contentType
-    );
-
     linkFoto = await subirFotoAS3({
       buffer: media.buffer,
-      nombreArchivo,
+      nombreArchivo: generarNombreFoto(usuario, media.contentType),
       contentType: media.contentType
     });
   }
 
-  const mensaje = {
+  const respuesta = await procesarMensaje(usuario, {
     texto: textoRecibido,
     tieneFoto,
     mediaId,
     linkFoto,
     fecha: new Date().toISOString()
-  };
+  });
 
-  const respuesta = await procesarMensaje(usuario, mensaje);
+  if (respuesta?.respuesta) {
+    await enviarTexto(numeroWhatsapp, respuesta.respuesta);
+  }
 
   return {
     ok: true,
