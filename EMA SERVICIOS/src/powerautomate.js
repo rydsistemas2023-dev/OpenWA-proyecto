@@ -8,8 +8,8 @@ async function enviarAPowerAutomate(datos) {
   const body = {
     POLIZA: datos.poliza || "",
     NRO_MEDIDOR: datos.numeroMedidor || "",
-    ESTADO: datos.lectura || datos.estado || "",
-    FOTOS: datos.linkFoto || ""
+    ESTADO: datos.estado || "",
+    VER_FOTO: datos.linkFoto || ""
   };
 
   const respuesta = await fetch(url, {
